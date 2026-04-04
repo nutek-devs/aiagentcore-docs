@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"Active subscription plans","content":{"application/json":{"schema":{"type":"object","properties":{"plans":{"type":"array","items":{"type":"object","properties":{"id":{"type":"integer"},"name":{"type":"string"},"isActive":{"type":"boolean"}}}}}}}}},"500":{"description":"Internal server error"}}}

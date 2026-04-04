@@ -1,0 +1,180 @@
+---
+id: widget-embed
+title: Incorporar Widget
+sidebar_position: 4
+---
+
+# Incorporar Widget
+
+O Widget do AIAgentCore e uma interface de chat leve que voce incorpora no seu site. Ele se conecta ao seu agente de IA via WebSocket e suporta respostas em streaming em tempo real.
+
+## Inicio Rapido
+
+Adicione o Widget a qualquer pagina HTML com uma unica tag de script:
+
+```html
+<script
+  src="https://api.aiagentcore.com/widget/aiagentcore-widget.js"
+  data-integration-id="YOUR_INTEGRATION_ID"
+></script>
+```
+
+So isso. O Widget aparece como um botao flutuante de chat no canto inferior direito.
+
+## Inicializacao Programatica
+
+Para mais controle, use a API JavaScript:
+
+```html
+<script src="https://api.aiagentcore.com/widget/aiagentcore-widget.js"></script>
+<script>
+  AIAgentCore.init({
+    integrationId: 42,
+    host: "https://api.aiagentcore.com",
+    lang: "en"
+  });
+</script>
+```
+
+### InitOptions
+
+| Opcao | Tipo | Obrigatorio | Padrao | Descricao |
+|-------|------|-------------|--------|-----------|
+| `integrationId` | `number` | Sim | — | Seu ID de integracao webchat |
+| `host` | `string` | Nao | Detectado automaticamente a partir do `src` do script | URL do servidor da API |
+| `lang` | `string` | Nao | Detectado automaticamente pelo navegador | Codigo de idioma (`en`, `pt-BR`, `es`) |
+
+## Suporte a Idiomas
+
+O Widget suporta tres idiomas:
+
+| Codigo | Idioma |
+|--------|--------|
+| `en` | Ingles |
+| `pt-BR` | Portugues (Brasil) |
+| `es` | Espanhol |
+
+### Via Atributo HTML
+
+```html
+<script
+  src="https://api.aiagentcore.com/widget/aiagentcore-widget.js"
+  data-integration-id="42"
+  data-lang="pt-BR"
+></script>
+```
+
+### Via JavaScript
+
+```javascript
+AIAgentCore.init({
+  integrationId: 42,
+  lang: "pt-BR"
+});
+```
+
+### Deteccao Automatica
+
+Se nenhum idioma for especificado, o Widget detecta o idioma do navegador do usuario:
+
+1. Correspondencia exata (ex.: `pt-BR` → Portugues)
+2. Correspondencia por prefixo (ex.: `pt` → `pt-BR`, `es-MX` → `es`)
+3. Fallback para `en`
+
+## Configuracao do Widget
+
+O Widget carrega sua configuracao do servidor com base no `integrationId`. Configure estas opcoes no Painel em **Settings > Integrations > Widget Config**:
+
+| Opcao | Tipo | Padrao | Descricao |
+|-------|------|--------|-----------|
+| `theme` | `string` | `"dark"` | Tema de cores (`light` ou `dark`) |
+| `accentColor` | `string` | `"#6366f1"` | Cor de destaque principal (hex) |
+| `position` | `string` | `"bottom-right"` | Posicao do Widget na pagina |
+| `brandLogo` | `string` | `null` | URL do logo da sua marca |
+| `brandName` | `string` | `null` | Nome da sua marca exibido no cabecalho |
+| `welcomeMessage` | `string` | `null` | Mensagem inicial do bot ao abrir o chat |
+| `placeholderText` | `string` | `null` | Texto placeholder do campo de entrada |
+| `mode` | `string` | `"chat"` | Modo de exibicao |
+| `autoOpen` | `boolean` | `false` | Abrir o painel de chat automaticamente |
+| `autoOpenDelayMs` | `number` | `3000` | Atraso antes da abertura automatica (ms) |
+| `requireEmail` | `boolean` | `false` | Capturar e-mail antes de permitir o chat |
+| `captureUtm` | `boolean` | `false` | Rastrear parametros UTM da URL |
+| `removeBranding` | `boolean` | `false` | Ocultar "Powered by AIAgentCore" |
+
+## Captura de E-mail
+
+Quando `requireEmail` esta habilitado, os usuarios devem informar seu e-mail antes de iniciar uma conversa:
+
+1. O usuario clica no botao de chat
+2. Um formulario de e-mail aparece sobrepondo o chat
+3. O usuario insere seu e-mail e clica em **Continue**
+4. O e-mail e vinculado aos metadados da conversa
+5. O campo de entrada do chat fica disponivel
+
+O e-mail capturado aparece no Painel em **Contacts** e e associado a conversa.
+
+## Rastreamento UTM
+
+Quando `captureUtm` esta habilitado, o Widget captura automaticamente os parametros UTM da URL da pagina:
+
+- `utm_source`
+- `utm_medium`
+- `utm_campaign`
+- `utm_term`
+- `utm_content`
+
+Os dados UTM sao enviados com a primeira mensagem e aparecem nos metadados da conversa no Painel.
+
+**Exemplo de URL:**
+```
+https://yoursite.com/pricing?utm_source=google&utm_medium=cpc&utm_campaign=launch
+```
+
+## Lista de Dominios Permitidos
+
+Por seguranca, voce pode restringir quais dominios podem carregar o Widget. Configure `allowedDomains` nas configuracoes da integracao:
+
+```json
+["example.com", "app.example.com", "staging.example.com"]
+```
+
+Requisicoes de dominios nao listados recebem uma resposta **403 Forbidden**.
+
+:::tip
+Deixe `allowedDomains` vazio durante o desenvolvimento para permitir todas as origens. Configure antes de ir para producao.
+:::
+
+## Detalhes da Conexao
+
+O Widget se conecta ao seu agente de IA via **WebSocket Socket.IO**:
+
+- **Namespace:** `/webchat`
+- **Path:** `/ws`
+- **Transporte:** WebSocket com fallback para long-polling
+- **Reconexao:** Automatica, ate 5 tentativas com atraso de 1s
+- **Persistencia de sessao:** ID do cliente armazenado no `localStorage` (`aiagentcore_cid_{integrationId}`)
+
+### Respostas em Streaming
+
+O agente de IA transmite respostas em tempo real. Conforme o LLM gera tokens, eles aparecem no chat imediatamente — proporcionando uma experiencia de conversa natural e responsiva.
+
+## Isolamento via Shadow DOM
+
+O Widget renderiza dentro de um [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM), o que significa:
+
+- Os estilos do Widget nao afetam sua pagina
+- Os estilos da sua pagina nao afetam o Widget
+- Sem conflitos de CSS, mesmo com folhas de estilo globais
+
+## Remocao
+
+Para remover o Widget programaticamente:
+
+```javascript
+const widget = AIAgentCore.init({ integrationId: 42 });
+
+// Depois, quando quiser remove-lo:
+widget.destroy();
+```
+
+Isso desconecta o WebSocket e remove o elemento DOM do Widget.

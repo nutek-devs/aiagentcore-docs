@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"Webhook received and enqueued","content":{"application/json":{"schema":{"type":"object","properties":{"ok":{"type":"boolean","example":true}}}}}},"401":{"description":"Invalid webhook signature"},"404":{"description":"Unknown connector or integration not found"},"500":{"description":"Internal server error"}}}

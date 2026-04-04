@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"Agent deleted","content":{"application/json":{"schema":{"type":"object","properties":{"success":{"type":"boolean","example":true}}}}}},"404":{"description":"Agent not found"},"500":{"description":"Internal server error"}}}

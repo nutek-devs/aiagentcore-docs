@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"Agent created (llmApiKey redacted as [ENCRYPTED])","content":{"application/json":{"schema":{"type":"object","properties":{"agent":{"type":"object"}}}}}},"400":{"description":"Validation error"}}}

@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"Agent updated (llmApiKey redacted)","content":{"application/json":{"schema":{"type":"object","properties":{"agent":{"type":"object"}}}}}},"404":{"description":"Agent not found"},"500":{"description":"Internal server error"}}}

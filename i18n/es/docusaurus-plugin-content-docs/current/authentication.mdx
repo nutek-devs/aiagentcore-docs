@@ -1,0 +1,171 @@
+---
+id: authentication
+title: Autenticación
+sidebar_position: 2
+---
+
+# Autenticación
+
+AIAgentCore utiliza **autenticación mediante Bearer token**. Todos los endpoints protegidos de la API requieren un token válido en el encabezado `Authorization`.
+
+## Descripción General
+
+Existen dos tipos de autenticación:
+
+| Tipo | Caso de Uso | Cómo Obtenerlo |
+|------|-------------|----------------|
+| **Token de API de la empresa** | Integraciones servidor a servidor, scripts | Página de Configuración del Panel |
+| **JWT de sesión** | Sesiones de frontend/panel | `POST /api/auth/login` |
+
+## Token de API de la Empresa
+
+La forma más sencilla de autenticarse. Obtén tu token desde el Panel:
+
+1. Inicia sesión en [app.aiagentcore.com](https://app.aiagentcore.com)
+2. Ve a **Configuración**
+3. Copia el **Token de API**
+
+Úsalo en cada solicitud:
+
+```bash
+curl -H "Authorization: Bearer YOUR_API_TOKEN" \
+  https://api.aiagentcore.com/api/agents
+```
+
+## Autenticación por Sesión (JWT)
+
+Para acceso programático, puedes obtener un JWT de sesión mediante el endpoint de inicio de sesión.
+
+### Registro
+
+```bash
+curl -X POST https://api.aiagentcore.com/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "your-secure-password",
+    "companyName": "Acme Corp"
+  }'
+```
+
+**Respuesta (201 Created):**
+
+```json
+{
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "user@example.com"
+  },
+  "company": {
+    "id": 1,
+    "companyId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "companyName": "Acme Corp"
+  }
+}
+```
+
+:::info
+Las cuentas nuevas reciben **$5 en créditos gratuitos** y un pipeline de ventas predeterminado con 6 etapas.
+:::
+
+### Inicio de Sesión
+
+```bash
+curl -X POST https://api.aiagentcore.com/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "your-secure-password"
+  }'
+```
+
+**Respuesta (200 OK):**
+
+```json
+{
+  "session": {
+    "access_token": "eyJhbGciOiJIUzI1NiIs...",
+    "refresh_token": "v1.MjE0...",
+    "expires_at": 1712345678
+  },
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "user@example.com",
+    "companyId": 1
+  }
+}
+```
+
+### Renovar Token
+
+Los tokens de acceso expiran. Usa el token de renovación para obtener una nueva sesión sin volver a autenticarte:
+
+```bash
+curl -X POST https://api.aiagentcore.com/api/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{
+    "refresh_token": "v1.MjE0..."
+  }'
+```
+
+**Respuesta (200 OK):**
+
+```json
+{
+  "session": {
+    "access_token": "eyJhbGciOiJIUzI1NiIs...",
+    "refresh_token": "v1.new-refresh-token...",
+    "expires_at": 1712349278
+  }
+}
+```
+
+### Obtener Usuario Actual
+
+```bash
+curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  https://api.aiagentcore.com/api/auth/me
+```
+
+**Respuesta (200 OK):**
+
+```json
+{
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "user@example.com",
+    "companyId": 1,
+    "isSuperadmin": false
+  },
+  "company": {
+    "id": 1,
+    "companyId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "companyName": "Acme Corp",
+    "createdAt": "2026-01-15T10:30:00.000Z"
+  }
+}
+```
+
+## Respuestas de Error
+
+| Estado | Código | Descripción |
+|--------|--------|-------------|
+| 401 | `INVALID_CREDENTIALS` | Correo electrónico o contraseña incorrectos |
+| 401 | `REFRESH_FAILED` | Token de renovación inválido o expirado |
+| 500 | `USER_CREATION_FAILED` | El registro falló (es posible que el correo electrónico ya exista) |
+| 500 | `INTERNAL_ERROR` | Error del servidor |
+
+Todas las respuestas de error siguen este formato:
+
+```json
+{
+  "error": {
+    "code": "INVALID_CREDENTIALS",
+    "message": "Invalid email or password"
+  }
+}
+```
+
+## Aislamiento Multi-Tenant
+
+Todos los datos están limitados por `companyId`. Tu token de API o JWT restringe automáticamente el acceso únicamente a los recursos de tu empresa. No es posible acceder a los agentes, conversaciones o datos de otra empresa.

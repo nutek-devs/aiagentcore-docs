@@ -1,0 +1,98 @@
+---
+id: getting-started
+title: Primeros Pasos
+slug: /
+sidebar_position: 1
+---
+
+# Primeros Pasos
+
+AIAgentCore es una plataforma de nivel empresarial para crear agentes de atención al cliente con inteligencia artificial. Conecta tus canales de mensajería, configura agentes inteligentes con RAG (Retrieval-Augmented Generation) y deja que manejen las conversaciones automáticamente.
+
+## Crea Tu Cuenta
+
+1. Ingresa al [Panel de AIAgentCore](https://app.aiagentcore.com)
+2. Haz clic en **Registrarse** y completa tu correo electrónico, contraseña y nombre de la empresa
+3. Tu cuenta incluye **$5 en créditos gratuitos** para comenzar
+
+## Obtén Tu Token de API
+
+1. Inicia sesión en el [Panel](https://app.aiagentcore.com)
+2. Navega a **Configuración** en la barra lateral
+3. Copia tu **Token de API** en la sección de API
+
+Todas las solicitudes a la API requieren este token en el encabezado `Authorization`:
+
+```bash
+curl -H "Authorization: Bearer YOUR_API_TOKEN" \
+  https://api.aiagentcore.com/api/agents
+```
+
+## Crea Tu Primer Agente
+
+### Vía Panel
+
+1. Navega a **Agentes** en la barra lateral
+2. Haz clic en **Crear Agente**
+3. Configura:
+   - **Nombre** — Un nombre descriptivo (ej., "Bot de Soporte al Cliente")
+   - **Prompt del Sistema** — Instrucciones para la IA (ej., "Eres un agente de soporte al cliente útil para Acme Corp.")
+   - **Proveedor de LLM** — Elige OpenAI o Google Gemini
+   - **Modelo de LLM** — Selecciona el modelo (ej., `gpt-4o`, `gemini-2.0-flash`)
+4. Agrega tu clave de API del LLM (o usa la clave a nivel de servidor si está configurada)
+5. Haz clic en **Guardar**
+
+### Vía API
+
+```bash
+curl -X POST https://api.aiagentcore.com/api/agents \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Customer Support Bot",
+    "systemPrompt": "You are a helpful customer support agent.",
+    "llmProvider": "openai",
+    "llmModel": "gpt-4o"
+  }'
+```
+
+## Conecta un Canal
+
+Los agentes necesitan un **canal** para recibir mensajes. AIAgentCore soporta:
+
+- **Widget de Webchat** — Incorpóralo en tu sitio web ([más información](/widget-embed))
+- **Chat2Desk** — Conecta WhatsApp, Telegram y más a través de Chat2Desk
+
+### Configuración de Webchat
+
+1. Ve a **Configuración > Integraciones**
+2. Haz clic en **Agregar Integración** y selecciona **Webchat**
+3. Configura la apariencia del widget (tema, colores, marca)
+4. Copia el código de inserción y agrégalo a tu sitio web
+
+### Configuración de Chat2Desk
+
+1. Ve a **Configuración > Integraciones**
+2. Haz clic en **Agregar Integración** y selecciona **Chat2Desk**
+3. Ingresa tu token de API de Chat2Desk
+4. Configura la URL del webhook en tu panel de Chat2Desk:
+   ```
+   https://api.aiagentcore.com/api/webhook/chat2desk/{integrationId}
+   ```
+5. Selecciona qué canales conectar
+
+## Agregar Base de Conocimiento (RAG)
+
+Haz que tu agente sea más inteligente subiendo documentos:
+
+1. Ve a **Agentes > Tu Agente > Base de Conocimiento**
+2. Sube documentos (PDF, TXT, DOCX, o pega texto)
+3. Los documentos se dividen, vectorizan e indexan automáticamente
+4. Tu agente utilizará búsqueda semántica para encontrar contexto relevante en cada conversación
+
+## ¿Qué Sigue?
+
+- [Autenticación](/authentication) — Detalles del flujo de autenticación de la API y gestión de tokens
+- [Webhooks](/webhooks) — Recibe eventos en tiempo real desde plataformas de mensajería
+- [Incorporar Widget](/widget-embed) — Incorpora el widget de chat en tu sitio web
+- [Referencia de la API](/api) — Documentación completa de endpoints

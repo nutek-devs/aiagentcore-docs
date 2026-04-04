@@ -1,0 +1,180 @@
+---
+id: widget-embed
+title: Incorporar Widget
+sidebar_position: 4
+---
+
+# Incorporar Widget
+
+El widget de AIAgentCore es una interfaz de chat liviana que incorporas en tu sitio web. Se conecta a tu agente de IA a través de WebSocket y soporta respuestas en streaming en tiempo real.
+
+## Inicio Rápido
+
+Agrega el widget a cualquier página HTML con una sola etiqueta de script:
+
+```html
+<script
+  src="https://api.aiagentcore.com/widget/aiagentcore-widget.js"
+  data-integration-id="YOUR_INTEGRATION_ID"
+></script>
+```
+
+Eso es todo. El widget aparece como una burbuja de chat flotante en la esquina inferior derecha.
+
+## Inicialización Programática
+
+Para mayor control, usa la API de JavaScript:
+
+```html
+<script src="https://api.aiagentcore.com/widget/aiagentcore-widget.js"></script>
+<script>
+  AIAgentCore.init({
+    integrationId: 42,
+    host: "https://api.aiagentcore.com",
+    lang: "en"
+  });
+</script>
+```
+
+### InitOptions
+
+| Opción | Tipo | Requerido | Predeterminado | Descripción |
+|--------|------|-----------|----------------|-------------|
+| `integrationId` | `number` | Sí | — | Tu ID de integración de webchat |
+| `host` | `string` | No | Auto-detectado desde el `src` del script | URL del servidor de la API |
+| `lang` | `string` | No | Auto-detectado desde el navegador | Código de idioma (`en`, `pt-BR`, `es`) |
+
+## Soporte de Idiomas
+
+El widget soporta tres idiomas:
+
+| Código | Idioma |
+|--------|--------|
+| `en` | Inglés |
+| `pt-BR` | Portugués (Brasil) |
+| `es` | Español |
+
+### Vía Atributo HTML
+
+```html
+<script
+  src="https://api.aiagentcore.com/widget/aiagentcore-widget.js"
+  data-integration-id="42"
+  data-lang="pt-BR"
+></script>
+```
+
+### Vía JavaScript
+
+```javascript
+AIAgentCore.init({
+  integrationId: 42,
+  lang: "pt-BR"
+});
+```
+
+### Auto-Detección
+
+Si no se especifica un idioma, el widget detecta el idioma del navegador del usuario:
+
+1. Coincidencia exacta (ej., `pt-BR` → Portugués)
+2. Coincidencia por prefijo (ej., `pt` → `pt-BR`, `es-MX` → `es`)
+3. Respaldo a `en`
+
+## Configuración del Widget
+
+El widget carga su configuración desde el servidor basándose en el `integrationId`. Configura estas opciones en el Panel en **Configuración > Integraciones > Configuración del Widget**:
+
+| Opción | Tipo | Predeterminado | Descripción |
+|--------|------|----------------|-------------|
+| `theme` | `string` | `"dark"` | Tema de color (`light` o `dark`) |
+| `accentColor` | `string` | `"#6366f1"` | Color de acento principal (hex) |
+| `position` | `string` | `"bottom-right"` | Posición del widget en la página |
+| `brandLogo` | `string` | `null` | URL del logo de tu marca |
+| `brandName` | `string` | `null` | Nombre de tu marca mostrado en el encabezado |
+| `welcomeMessage` | `string` | `null` | Mensaje inicial del bot al abrir el chat |
+| `placeholderText` | `string` | `null` | Texto de marcador del campo de entrada |
+| `mode` | `string` | `"chat"` | Modo de visualización |
+| `autoOpen` | `boolean` | `false` | Abrir automáticamente el panel de chat |
+| `autoOpenDelayMs` | `number` | `3000` | Retraso antes de la apertura automática (ms) |
+| `requireEmail` | `boolean` | `false` | Capturar correo electrónico antes de permitir el chat |
+| `captureUtm` | `boolean` | `false` | Rastrear parámetros UTM de la URL |
+| `removeBranding` | `boolean` | `false` | Ocultar "Powered by AIAgentCore" |
+
+## Captura de Correo Electrónico
+
+Cuando `requireEmail` está habilitado, los usuarios deben ingresar su correo electrónico antes de iniciar una conversación:
+
+1. El usuario hace clic en la burbuja de chat
+2. Aparece un formulario de correo electrónico sobre el chat
+3. El usuario ingresa su correo y hace clic en **Continuar**
+4. El correo electrónico se adjunta a los metadatos de la conversación
+5. El campo de entrada del chat se habilita
+
+El correo capturado aparece en el Panel en **Contactos** y se asocia con la conversación.
+
+## Rastreo UTM
+
+Cuando `captureUtm` está habilitado, el widget captura automáticamente los parámetros UTM de la URL de la página:
+
+- `utm_source`
+- `utm_medium`
+- `utm_campaign`
+- `utm_term`
+- `utm_content`
+
+Los datos UTM se envían con el primer mensaje y aparecen en los metadatos de la conversación en el Panel.
+
+**URL de ejemplo:**
+```
+https://yoursite.com/pricing?utm_source=google&utm_medium=cpc&utm_campaign=launch
+```
+
+## Lista de Dominios Permitidos
+
+Por seguridad, puedes restringir qué dominios pueden cargar el widget. Configura `allowedDomains` en la configuración de la integración:
+
+```json
+["example.com", "app.example.com", "staging.example.com"]
+```
+
+Las solicitudes desde dominios no listados reciben una respuesta **403 Forbidden**.
+
+:::tip
+Deja `allowedDomains` vacío durante el desarrollo para permitir todos los orígenes. Configúralo antes de pasar a producción.
+:::
+
+## Detalles de Conexión
+
+El widget se conecta a tu agente de IA mediante **Socket.IO WebSocket**:
+
+- **Namespace:** `/webchat`
+- **Path:** `/ws`
+- **Transporte:** WebSocket con respaldo a long-polling
+- **Reconexión:** Automática, hasta 5 intentos con 1 segundo de retraso
+- **Persistencia de sesión:** ID del cliente almacenado en `localStorage` (`aiagentcore_cid_{integrationId}`)
+
+### Respuestas en Streaming
+
+El agente de IA transmite las respuestas en tiempo real. A medida que el LLM genera tokens, aparecen en el chat inmediatamente, proporcionando una experiencia de conversación natural y receptiva.
+
+## Aislamiento Shadow DOM
+
+El widget se renderiza dentro de un [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM), lo que significa:
+
+- Los estilos del widget no afectan tu página
+- Los estilos de tu página no afectan al widget
+- Sin conflictos de CSS, incluso con hojas de estilo globales
+
+## Limpieza
+
+Para eliminar el widget de forma programática:
+
+```javascript
+const widget = AIAgentCore.init({ integrationId: 42 });
+
+// Luego, cuando quieras eliminarlo:
+widget.destroy();
+```
+
+Esto desconecta el WebSocket y elimina el elemento DOM del widget.

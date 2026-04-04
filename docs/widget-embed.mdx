@@ -1,0 +1,180 @@
+---
+id: widget-embed
+title: Widget Embed
+sidebar_position: 4
+---
+
+# Widget Embed
+
+The AIAgentCore widget is a lightweight chat interface that you embed on your website. It connects to your AI agent via WebSocket and supports real-time streaming responses.
+
+## Quick Start
+
+Add the widget to any HTML page with a single script tag:
+
+```html
+<script
+  src="https://api.aiagentcore.com/widget/aiagentcore-widget.js"
+  data-integration-id="YOUR_INTEGRATION_ID"
+></script>
+```
+
+That's it. The widget appears as a floating chat bubble in the bottom-right corner.
+
+## Programmatic Initialization
+
+For more control, use the JavaScript API:
+
+```html
+<script src="https://api.aiagentcore.com/widget/aiagentcore-widget.js"></script>
+<script>
+  AIAgentCore.init({
+    integrationId: 42,
+    host: "https://api.aiagentcore.com",
+    lang: "en"
+  });
+</script>
+```
+
+### InitOptions
+
+| Option | Type | Required | Default | Description |
+|--------|------|----------|---------|-------------|
+| `integrationId` | `number` | Yes | — | Your webchat integration ID |
+| `host` | `string` | No | Auto-detected from script `src` | API server URL |
+| `lang` | `string` | No | Auto-detected from browser | Language code (`en`, `pt-BR`, `es`) |
+
+## Language Support
+
+The widget supports three languages:
+
+| Code | Language |
+|------|----------|
+| `en` | English |
+| `pt-BR` | Portuguese (Brazil) |
+| `es` | Spanish |
+
+### Via HTML Attribute
+
+```html
+<script
+  src="https://api.aiagentcore.com/widget/aiagentcore-widget.js"
+  data-integration-id="42"
+  data-lang="pt-BR"
+></script>
+```
+
+### Via JavaScript
+
+```javascript
+AIAgentCore.init({
+  integrationId: 42,
+  lang: "pt-BR"
+});
+```
+
+### Auto-Detection
+
+If no language is specified, the widget detects the user's browser language:
+
+1. Exact match (e.g., `pt-BR` → Portuguese)
+2. Prefix match (e.g., `pt` → `pt-BR`, `es-MX` → `es`)
+3. Fallback to `en`
+
+## Widget Configuration
+
+The widget loads its configuration from the server based on the `integrationId`. Configure these options in the Dashboard under **Settings > Integrations > Widget Config**:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `theme` | `string` | `"dark"` | Color theme (`light` or `dark`) |
+| `accentColor` | `string` | `"#6366f1"` | Primary accent color (hex) |
+| `position` | `string` | `"bottom-right"` | Widget position on the page |
+| `brandLogo` | `string` | `null` | URL to your brand logo |
+| `brandName` | `string` | `null` | Your brand name shown in the header |
+| `welcomeMessage` | `string` | `null` | Initial bot message when chat opens |
+| `placeholderText` | `string` | `null` | Input field placeholder text |
+| `mode` | `string` | `"chat"` | Display mode |
+| `autoOpen` | `boolean` | `false` | Automatically open the chat panel |
+| `autoOpenDelayMs` | `number` | `3000` | Delay before auto-opening (ms) |
+| `requireEmail` | `boolean` | `false` | Capture email before allowing chat |
+| `captureUtm` | `boolean` | `false` | Track UTM parameters from URL |
+| `removeBranding` | `boolean` | `false` | Hide "Powered by AIAgentCore" |
+
+## Email Capture
+
+When `requireEmail` is enabled, users must enter their email before starting a conversation:
+
+1. User clicks the chat bubble
+2. An email form appears overlaying the chat
+3. User enters their email and clicks **Continue**
+4. Email is attached to the conversation metadata
+5. Chat input becomes available
+
+The captured email appears in the Dashboard under **Contacts** and is associated with the conversation.
+
+## UTM Tracking
+
+When `captureUtm` is enabled, the widget automatically captures UTM parameters from the page URL:
+
+- `utm_source`
+- `utm_medium`
+- `utm_campaign`
+- `utm_term`
+- `utm_content`
+
+UTM data is sent with the first message and appears in the conversation metadata in the Dashboard.
+
+**Example URL:**
+```
+https://yoursite.com/pricing?utm_source=google&utm_medium=cpc&utm_campaign=launch
+```
+
+## Domain Allowlist
+
+For security, you can restrict which domains can load the widget. Configure `allowedDomains` in the integration settings:
+
+```json
+["example.com", "app.example.com", "staging.example.com"]
+```
+
+Requests from unlisted domains receive a **403 Forbidden** response.
+
+:::tip
+Leave `allowedDomains` empty during development to allow all origins. Set it before going to production.
+:::
+
+## Connection Details
+
+The widget connects to your AI agent via **Socket.IO WebSocket**:
+
+- **Namespace:** `/webchat`
+- **Path:** `/ws`
+- **Transport:** WebSocket with long-polling fallback
+- **Reconnection:** Automatic, up to 5 attempts with 1s delay
+- **Session persistence:** Client ID stored in `localStorage` (`aiagentcore_cid_{integrationId}`)
+
+### Streaming Responses
+
+The AI agent streams responses in real-time. As the LLM generates tokens, they appear in the chat immediately — providing a natural, responsive conversation experience.
+
+## Shadow DOM Isolation
+
+The widget renders inside a [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM), which means:
+
+- Widget styles don't affect your page
+- Your page styles don't affect the widget
+- No CSS conflicts, even with global stylesheets
+
+## Cleanup
+
+To remove the widget programmatically:
+
+```javascript
+const widget = AIAgentCore.init({ integrationId: 42 });
+
+// Later, when you want to remove it:
+widget.destroy();
+```
+
+This disconnects the WebSocket and removes the widget DOM element.

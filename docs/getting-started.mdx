@@ -1,0 +1,98 @@
+---
+id: getting-started
+title: Getting Started
+slug: /
+sidebar_position: 1
+---
+
+# Getting Started
+
+AIAgentCore is an enterprise-grade platform for building AI-powered customer agents. Connect your messaging channels, configure intelligent agents with RAG (Retrieval-Augmented Generation), and let them handle conversations automatically.
+
+## Create Your Account
+
+1. Go to the [AIAgentCore Dashboard](https://app.aiagentcore.com)
+2. Click **Sign Up** and fill in your email, password, and company name
+3. Your account comes with **$5 in free credits** to get started
+
+## Get Your API Token
+
+1. Log in to the [Dashboard](https://app.aiagentcore.com)
+2. Navigate to **Settings** in the sidebar
+3. Copy your **API Token** from the API section
+
+All API requests require this token in the `Authorization` header:
+
+```bash
+curl -H "Authorization: Bearer YOUR_API_TOKEN" \
+  https://api.aiagentcore.com/api/agents
+```
+
+## Create Your First Agent
+
+### Via Dashboard
+
+1. Navigate to **Agents** in the sidebar
+2. Click **Create Agent**
+3. Configure:
+   - **Name** — A descriptive name (e.g., "Customer Support Bot")
+   - **System Prompt** — Instructions for the AI (e.g., "You are a helpful customer support agent for Acme Corp.")
+   - **LLM Provider** — Choose OpenAI or Google Gemini
+   - **LLM Model** — Select the model (e.g., `gpt-4o`, `gemini-2.0-flash`)
+4. Add your LLM API key (or use the server-level key if configured)
+5. Click **Save**
+
+### Via API
+
+```bash
+curl -X POST https://api.aiagentcore.com/api/agents \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Customer Support Bot",
+    "systemPrompt": "You are a helpful customer support agent.",
+    "llmProvider": "openai",
+    "llmModel": "gpt-4o"
+  }'
+```
+
+## Connect a Channel
+
+Agents need a **channel** to receive messages. AIAgentCore supports:
+
+- **Webchat Widget** — Embed on your website ([learn more](/widget-embed))
+- **Chat2Desk** — Connect WhatsApp, Telegram, and more via Chat2Desk
+
+### Webchat Setup
+
+1. Go to **Settings > Integrations**
+2. Click **Add Integration** and select **Webchat**
+3. Configure the widget appearance (theme, colors, branding)
+4. Copy the embed code and add it to your website
+
+### Chat2Desk Setup
+
+1. Go to **Settings > Integrations**
+2. Click **Add Integration** and select **Chat2Desk**
+3. Enter your Chat2Desk API token
+4. Configure the webhook URL in your Chat2Desk dashboard:
+   ```
+   https://api.aiagentcore.com/api/webhook/chat2desk/{integrationId}
+   ```
+5. Select which channels to connect
+
+## Add Knowledge Base (RAG)
+
+Make your agent smarter by uploading documents:
+
+1. Go to **Agents > Your Agent > Knowledge Base**
+2. Upload documents (PDF, TXT, DOCX, or paste text)
+3. Documents are automatically chunked, embedded, and indexed
+4. Your agent will use semantic search to find relevant context for each conversation
+
+## What's Next?
+
+- [Authentication](/authentication) — API auth flow details and token management
+- [Webhooks](/webhooks) — Receive real-time events from messaging platforms
+- [Widget Embed](/widget-embed) — Embed the chat widget on your website
+- [API Reference](/api) — Complete endpoint documentation

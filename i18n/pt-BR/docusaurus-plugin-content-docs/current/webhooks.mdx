@@ -1,0 +1,162 @@
+---
+id: webhooks
+title: Webhooks
+sidebar_position: 3
+---
+
+# Webhooks
+
+O AIAgentCore recebe mensagens de plataformas de mensagens via webhooks. Quando um cliente envia uma mensagem no WhatsApp, Telegram ou qualquer canal conectado, a plataforma entrega a mensagem ao seu endpoint de webhook para processamento.
+
+## Formato da URL do Webhook
+
+```
+POST https://api.aiagentcore.com/api/webhook/{connectorType}/{integrationId}
+```
+
+| Parametro | Descricao | Exemplo |
+|-----------|-----------|---------|
+| `connectorType` | O conector da plataforma de mensagens | `chat2desk`, `webchat` |
+| `integrationId` | Seu ID de integracao (do Painel) | `42` |
+
+**Exemplo:**
+```
+https://api.aiagentcore.com/api/webhook/chat2desk/42
+```
+
+## Conectores Suportados
+
+### Chat2Desk
+
+O [Chat2Desk](https://chat2desk.com) e uma plataforma multicanal de mensagens que agrega WhatsApp, Telegram, Instagram, VK e outros em uma unica API.
+
+**Configuracao:**
+
+1. Crie uma integracao Chat2Desk no Painel do AIAgentCore
+2. Copie a URL do webhook
+3. No painel do Chat2Desk, configure a URL do webhook para:
+   ```
+   https://api.aiagentcore.com/api/webhook/chat2desk/{integrationId}
+   ```
+4. Configure o segredo do webhook para verificacao de assinatura
+
+**Payload de entrada** (enviado pelo Chat2Desk):
+
+```json
+{
+  "text": "Hello, I need help with my order",
+  "client_id": "12345678",
+  "channel_id": "987654",
+  "transport": "whatsapp"
+}
+```
+
+### Webchat
+
+O conector webchat utiliza **WebSocket (Socket.IO)** em vez de webhooks HTTP. As mensagens do Widget incorporado sao entregues em tempo real por meio de uma conexao persistente.
+
+Consulte [Incorporar Widget](/widget-embed) para instrucoes de configuracao.
+
+## Verificacao de Assinatura do Webhook
+
+O AIAgentCore verifica a autenticidade dos webhooks recebidos usando **assinaturas HMAC-SHA256**.
+
+### Como Funciona
+
+1. A plataforma de envio calcula um hash HMAC-SHA256 do corpo da requisicao usando o segredo compartilhado do webhook
+2. O hash e enviado no header `x-webhook-signature` ou `x-hub-signature-256`
+3. O AIAgentCore recalcula o hash e compara usando comparacao segura contra timing attacks
+
+### Formato do Header de Assinatura
+
+```
+x-webhook-signature: sha256=a1b2c3d4e5f6...
+```
+
+Ou alternativamente:
+
+```
+x-hub-signature-256: sha256=a1b2c3d4e5f6...
+```
+
+### Exemplo de Verificacao (Node.js)
+
+Se voce precisar enviar webhooks de teste ou verificar a assinatura por conta propria:
+
+```typescript
+import { createHmac, timingSafeEqual } from "crypto";
+
+function verifySignature(
+  body: string,
+  signature: string,
+  secret: string
+): boolean {
+  const expected = createHmac("sha256", secret)
+    .update(body)
+    .digest("hex");
+
+  const received = signature.replace("sha256=", "");
+
+  return timingSafeEqual(
+    Buffer.from(expected, "hex"),
+    Buffer.from(received, "hex")
+  );
+}
+```
+
+## Fluxo de Processamento
+
+Quando um webhook e recebido, o AIAgentCore o processa de forma assincrona:
+
+```
+Plataforma → Endpoint do Webhook → Verificacao de Assinatura → Parsing da Mensagem → Fila → Agente IA → Resposta
+```
+
+1. **Receber** — O endpoint do webhook aceita o HTTP POST
+2. **Verificar** — A assinatura HMAC e validada (401 se invalida)
+3. **Interpretar** — O conector normaliza o payload especifico da plataforma em um formato de mensagem padrao
+4. **Enfileirar** — A mensagem e colocada na fila para processamento assincrono
+5. **Processar** — O agente de IA gera uma resposta usando o LLM configurado e a base de conhecimento
+6. **Responder** — A resposta e enviada de volta pelo mesmo canal de mensagens
+
+## Codigos de Resposta
+
+| Status | Descricao |
+|--------|-----------|
+| 200 | Webhook recebido e processado (ou ignorado) |
+| 401 | Assinatura do webhook invalida |
+| 403 | Integracao nao esta ativa |
+| 404 | Tipo de conector desconhecido ou integracao nao encontrada |
+| 500 | Erro interno do servidor |
+
+**Resposta de sucesso:**
+
+```json
+{
+  "ok": true
+}
+```
+
+## Verificacao de Endpoint
+
+Algumas plataformas enviam uma requisicao GET para verificar a URL do webhook. O AIAgentCore lida com isso automaticamente:
+
+```
+GET https://api.aiagentcore.com/api/webhook/{connectorType}/{integrationId}
+```
+
+**Resposta (200 OK):**
+
+```json
+{
+  "ok": true,
+  "verified": true
+}
+```
+
+## Boas Praticas
+
+- **Sempre configure um segredo de webhook** — Sem ele, qualquer pessoa poderia enviar mensagens falsas para sua integracao
+- **Use HTTPS** — A API de producao exige HTTPS para todos os endpoints de webhook
+- **Monitore os logs de webhook** — Verifique o Painel para status de entrega e erros
+- **A integracao deve estar ativa** — Integracoes inativas rejeitam webhooks com 403

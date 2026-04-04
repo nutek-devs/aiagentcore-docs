@@ -1,0 +1,69 @@
+---
+id: receive-inbound-webhook-from-a-messaging-platform
+title: "Receive inbound webhook from a messaging platform"
+description: "Generic webhook endpoint for all connectors. Verifies HMAC signature, parses the message, and enqueues for async processing."
+sidebar_label: "Receive inbound webhook from a messaging platform"
+hide_title: true
+hide_table_of_contents: true
+api: eJzFVU1v2zgQ/SvEnFqAkd2ie9HNTRetD7sbJO32YPgwIscSa4lkSMqpIei/L0ZSHH+kRZDL5pKIGQ7fvHlvpgNNUQXjk3EWcvhMloJR4oGKyrmtIKu9MzaJjQsC61ooZy2p5ELMxL8UzMZQFF/+WlyLaEqLqQ0khccQKYpUkWgoRixJCrRakL1vqaU4Zot7q4QPTlGMxpYZSEhYRshX8H18PsJaQiTVBpP2kK/WEjwGbChR4LgODIP2mCqQYLEhyOGA8OveE0gIdN+aQBryFFqSEFVFDULeQeKAHGIKxpbQyzMurh8TCQ4UbygrM6EqTO81xa1kjvjrLfTyWSDGJioDcralfgmQ4QIF6Pv1GE0xfXR6zyHnl5WziWzif6H3tVHDO7MfkaF3l7ld8YNUgl/WeBU9KbM5ar3Hfe1QQ9/3PcOJ3tlIkXO+n8/512mqqWcikCKzI33ccS7/1Yh9cJ5CMuPbbnsUUzhXE1qQQD+x8TWN9PT9CPrD/N0lzqXdYW30oc6DbmG48eHyxje7te7BPmlfuCCOuiusY4O0VnOKP54jZ2kTBYu1iBR2FASF4LjREhpKldMsHheHallDOczQm9kEcdadaLqfdSfS6oFNwmlHT7ShhhyqlHzMZ5wnQ4Ml2aRcoEy55kIFN8HpVg0frOXTBJp2Vy9J8ol2VDvfcI/7I9/ecWPH3hWEgcKi5QoPPeR3YHLD0NMh6BmlNh7tXixuliK5LVnhioTGkhab4Jph2GiMVeEwaHFHKRlbRuGxpIFn1tntk6f+fNRL10swduMGRCbxESyWCy712gXi90ACkzvieJfNs/kFOkbFQ61Bi6WxpVgsxUBXlMdKieMcVM5ywuEIa/FgdEkpZoKZIZvYGiR2BsXHgYux3mzyEKrBQ9OQ+btNtBWfaBdBnnf+rGHMAousQXuU4Ha0qzC2YAUfbDGQitP85op8jWnjwkXjuydn/+/rY1RUop9p5ms0LOeRlG7y1QrQG5AwAQQJ+fm+yE/n9lpCxc7MV9B1BUb6Fuq+5+P7lsK0lXYYDBasnVUH2kT+W0O+wTrSb+h6cztN9bfixcvmF1VOh2j3rFasW/4CCVvaX+xE9virQL7u8VM++3UvoSLUFAa2xpjr8bmrqQePOS4WBUMfbyyUIp9+G7s+mq43/9x9BQnFtE4bp/lOwAdezPgw4nVD+cOoGs46qNGWLY+QHMac/PMfrQU3ag==
+sidebar_class_name: "post api-method"
+info_path: docs/api/aiagentcore-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Receive inbound webhook from a messaging platform"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/webhook/{connectorType}/{integrationId}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Generic webhook endpoint for all connectors. Verifies HMAC signature, parses the message, and enqueues for async processing.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./receive-inbound-webhook-from-a-messaging-platform.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./receive-inbound-webhook-from-a-messaging-platform.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./receive-inbound-webhook-from-a-messaging-platform.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

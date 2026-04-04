@@ -1,0 +1,1 @@
+{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"displayName":{"type":"string"},"config":{"type":"object"},"status":{"type":"string"},"credentials":{"type":"object","description":"Re-encrypted on update"}}}}}}}

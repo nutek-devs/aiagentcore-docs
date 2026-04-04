@@ -1,0 +1,171 @@
+---
+id: authentication
+title: Autenticacao
+sidebar_position: 2
+---
+
+# Autenticacao
+
+O AIAgentCore utiliza **autenticacao via Bearer token**. Todos os endpoints protegidos da API exigem um token valido no header `Authorization`.
+
+## Visao Geral
+
+Existem dois tipos de autenticacao:
+
+| Tipo | Caso de Uso | Como Obter |
+|------|-------------|------------|
+| **Token de API da Empresa** | Integracoes servidor-para-servidor, scripts | Pagina de Configuracoes no Painel |
+| **JWT de Sessao** | Sessoes do frontend/painel | `POST /api/auth/login` |
+
+## Token de API da Empresa
+
+A forma mais simples de autenticar. Obtenha seu token no Painel:
+
+1. Faca login em [app.aiagentcore.com](https://app.aiagentcore.com)
+2. Va em **Configuracoes**
+3. Copie o **API Token**
+
+Use-o em toda requisicao:
+
+```bash
+curl -H "Authorization: Bearer YOUR_API_TOKEN" \
+  https://api.aiagentcore.com/api/agents
+```
+
+## Autenticacao por Sessao (JWT)
+
+Para acesso programatico, voce pode obter um JWT de sessao pelo endpoint de login.
+
+### Registro
+
+```bash
+curl -X POST https://api.aiagentcore.com/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "your-secure-password",
+    "companyName": "Acme Corp"
+  }'
+```
+
+**Resposta (201 Created):**
+
+```json
+{
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "user@example.com"
+  },
+  "company": {
+    "id": 1,
+    "companyId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "companyName": "Acme Corp"
+  }
+}
+```
+
+:::info
+Novas contas recebem **$5 em creditos gratuitos** e um pipeline de vendas padrao com 6 etapas.
+:::
+
+### Login
+
+```bash
+curl -X POST https://api.aiagentcore.com/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "your-secure-password"
+  }'
+```
+
+**Resposta (200 OK):**
+
+```json
+{
+  "session": {
+    "access_token": "eyJhbGciOiJIUzI1NiIs...",
+    "refresh_token": "v1.MjE0...",
+    "expires_at": 1712345678
+  },
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "user@example.com",
+    "companyId": 1
+  }
+}
+```
+
+### Atualizar Token
+
+Os tokens de acesso expiram. Use o refresh token para obter uma nova sessao sem precisar autenticar novamente:
+
+```bash
+curl -X POST https://api.aiagentcore.com/api/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{
+    "refresh_token": "v1.MjE0..."
+  }'
+```
+
+**Resposta (200 OK):**
+
+```json
+{
+  "session": {
+    "access_token": "eyJhbGciOiJIUzI1NiIs...",
+    "refresh_token": "v1.new-refresh-token...",
+    "expires_at": 1712349278
+  }
+}
+```
+
+### Obter Usuario Atual
+
+```bash
+curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  https://api.aiagentcore.com/api/auth/me
+```
+
+**Resposta (200 OK):**
+
+```json
+{
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "user@example.com",
+    "companyId": 1,
+    "isSuperadmin": false
+  },
+  "company": {
+    "id": 1,
+    "companyId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "companyName": "Acme Corp",
+    "createdAt": "2026-01-15T10:30:00.000Z"
+  }
+}
+```
+
+## Respostas de Erro
+
+| Status | Codigo | Descricao |
+|--------|--------|-----------|
+| 401 | `INVALID_CREDENTIALS` | E-mail ou senha incorretos |
+| 401 | `REFRESH_FAILED` | Refresh token invalido ou expirado |
+| 500 | `USER_CREATION_FAILED` | Falha no registro (e-mail pode ja existir) |
+| 500 | `INTERNAL_ERROR` | Erro no servidor |
+
+Todas as respostas de erro seguem este formato:
+
+```json
+{
+  "error": {
+    "code": "INVALID_CREDENTIALS",
+    "message": "Invalid email or password"
+  }
+}
+```
+
+## Isolamento Multi-Tenant
+
+Todos os dados sao isolados por `companyId`. Seu API token ou JWT restringe automaticamente o acesso apenas aos recursos da sua empresa. Nao e possivel acessar agentes, conversas ou dados de outra empresa.
