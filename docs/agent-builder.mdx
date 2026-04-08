@@ -1,0 +1,70 @@
+---
+id: agent-builder
+title: Agent Builder
+sidebar_position: 2
+---
+
+# Agent Builder
+
+The Agent Builder is the fastest way to go from an idea to a deployed AI agent. You can either describe what you want and let the AI wizard scaffold the full configuration, or start from one of the curated system templates.
+
+Open the builder from the **Agents** page by clicking **Create Agent**.
+
+## Three ways to start
+
+### 1. Describe your agent (AI Wizard)
+
+Type a short description — e.g. *"I want an agent for my pet shop that handles bookings and answers product questions"* — and click **Generate with AI**. The wizard picks the closest system template, generates a suggested name, and fills in every prompt section (identity, role, context, personality, goal, guardrails) in your current interface language.
+
+### 2. Pick a system template
+
+Start from a pre-built agent tailored for a common use case. Each template ships with a system prompt, welcome message, fallback response, temperature and recommended integrations.
+
+### 3. Blank agent
+
+Start from an empty agent and configure every field by hand.
+
+## System templates
+
+| Slug | Name | Category | What it does |
+|---|---|---|---|
+| `receptionist` | Receptionist | Sales | Initial triage, company introduction, and routing to specialists |
+| `sdr` | SDR | Sales | Lead qualification and meeting scheduling with the sales team |
+| `sales` | Sales | Sales | Convert interest into purchase with payment links |
+| `financial` | Financial | Operations | Payment reminders, cart recovery, and friendly collections |
+| `support` | Support | Support | Resolve issues using the knowledge base |
+
+All system templates are seeded on server boot and kept in sync with the canonical English source. You can edit any field after creating the agent — templates are a starting point, not a lock-in.
+
+## Languages
+
+The Agent Builder is fully localized. Template names, descriptions, welcome messages, fallback responses and all six prompt sections are translated into the active interface language at the moment you pick a template. Supported languages today:
+
+- **English** (`en`) — canonical source of truth
+- **Portuguese (Brazil)** (`pt-BR`)
+- **Spanish** (`es`)
+
+Switch language from the language switcher in the app header. The AI Wizard also honours the active language — prompts are generated directly in that language.
+
+## Custom company templates
+
+Companies can create their own templates (not covered by this page yet). Custom templates are not localized — their content is stored and displayed as authored. Use this for workflows that don't fit any system template.
+
+## What gets created
+
+When you confirm, a new agent is created with:
+
+- `name` — what you typed in the name step
+- `promptSections` — localized or AI-generated
+- `welcomeMessage`, `fallbackResponse` — from the template (localized)
+- `temperature`, `maxTokens` — template defaults
+- `language` — the active interface language (`en` / `pt` / `es`)
+- `templateId` — reference to the source template (null for blank or AI-generated agents)
+
+You land directly in the agent editor, ready to add channels, knowledge base and tools.
+
+## See also
+
+- [Getting Started](/) — account setup and API token
+- [Authentication](/authentication) — API auth flow
+- [Widget Embed](/widget-embed) — embed the chat widget on your site
