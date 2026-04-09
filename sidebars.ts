@@ -10,6 +10,7 @@ try {
 const sidebars: SidebarsConfig = {
   docs: [
     "getting-started",
+    "agent-builder",
     "authentication",
     "webhooks",
     "widget-embed",

@@ -33,14 +33,12 @@ curl -H "Authorization: Bearer YOUR_API_TOKEN" \
 ### Via Dashboard
 
 1. Navigate to **Agents** in the sidebar
-2. Click **Create Agent**
-3. Configure:
-   - **Name** — A descriptive name (e.g., "Customer Support Bot")
-   - **System Prompt** — Instructions for the AI (e.g., "You are a helpful customer support agent for Acme Corp.")
-   - **LLM Provider** — Choose OpenAI or Google Gemini
-   - **LLM Model** — Select the model (e.g., `gpt-4o`, `gemini-2.0-flash`)
-4. Add your LLM API key (or use the server-level key if configured)
-5. Click **Save**
+2. Click **Create Agent** — the [Agent Builder](/agent-builder) opens
+3. Either **describe your agent** in plain text and let the AI Wizard scaffold it, or **pick a system template** (Receptionist, SDR, Sales, Financial, Support) or start **Blank**
+4. Give the agent a name and confirm — you land directly in the agent editor
+5. In the editor, configure your **LLM Provider** (OpenAI or Google Gemini), **model** (e.g. `gpt-4o`, `gemini-2.0-flash`) and API key, then save
+
+The Agent Builder is fully localized (English, Portuguese, Spanish) — template content and AI-generated prompts follow your interface language. See the [Agent Builder reference](/agent-builder) for details on each template.
 
 ### Via API
 
@@ -92,6 +90,7 @@ Make your agent smarter by uploading documents:
 
 ## What's Next?
 
+- [Agent Builder](/agent-builder) — templates, AI wizard and multilingual configuration
 - [Authentication](/authentication) — API auth flow details and token management
 - [Webhooks](/webhooks) — Receive real-time events from messaging platforms
 - [Widget Embed](/widget-embed) — Embed the chat widget on your website
