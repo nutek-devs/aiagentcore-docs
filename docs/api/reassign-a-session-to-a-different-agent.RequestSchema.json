@@ -1,0 +1,1 @@
+{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"targetAgentId":{"type":"integer","minimum":1},"reason":{"type":"string","maxLength":500}},"required":["targetAgentId"]}}}}}
