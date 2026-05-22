@@ -51,6 +51,38 @@ https://api.aiagentcore.com/api/webhook/chat2desk/42
 }
 ```
 
+#### Chat2Desk Status Events (Auto-resume)
+
+Chat2Desk also delivers **status events** to the same webhook URL when a human operator acts on a dialog. AIAgentCore consumes these events to keep the AI session in sync — for example automatically closing the session when the operator closes the ticket.
+
+The event type is determined by the `hook_type` field on the inbound payload (verbatim — not `event` or `type`).
+
+**Status payload schema (flat, snake_case):**
+
+```json
+{
+  "hook_type": "close_dialog",
+  "request_id": 12345,
+  "dialog_id": 67890
+}
+```
+
+- `hook_type` — required, determines the action
+- `request_id` — required (`number`)
+- `dialog_id` — optional on `close_*` events, present on transfers
+
+**`hook_type` → internal action:**
+
+| `hook_type` | Internal action | Effect on AIAgentCore session |
+|---|---|---|
+| `close_dialog` | `session_close` | Session moves to `closed` |
+| `close_request` | `session_close` | Session moves to `closed` |
+| `dialog_transferred` | `session_transfer_external` | Session **stays paused**, transfer is recorded in the Shared Conversation Context |
+
+No extra configuration is needed on the AIAgentCore side — the webhook just has to be registered (see **Register-webhook helper** below).
+
+See [Session Lifecycle](/session-lifecycle) for the full state machine.
+
 ### Webchat
 
 The webchat connector uses **WebSocket (Socket.IO)** instead of HTTP webhooks. Messages from the embedded widget are delivered in real-time via a persistent connection.
@@ -103,6 +135,29 @@ function verifySignature(
   );
 }
 ```
+
+## Register-webhook helper (UI + API)
+
+You don't have to copy and paste the webhook URL into the Chat2Desk dashboard by hand — AIAgentCore can register (or re-register) the webhook on your behalf.
+
+**UI:** In **Settings → Integrations**, open the card for your Chat2Desk integration. The card shows a **Register webhook** button (or **Re-register webhook** if one is already registered) plus a **Webhook OK** / **Webhook pendente** badge. Clicking the button calls the helper endpoint below.
+
+**API:**
+
+```
+POST /api/integrations/:id/register-webhook
+```
+
+See the [API Reference](/api) for the full schema. The call is **idempotent** — it creates a new registration if none exists, or updates the existing one. On success it returns:
+
+```json
+{
+  "ok": true,
+  "webhookRegisteredAt": "2026-05-21T17:45:12Z"
+}
+```
+
+**Prerequisite:** the integration must have its `apiUrl` field configured (Chat2Desk has separate global and Europe instances; pick the one matching your account). Without `apiUrl` the call returns `400 not_supported`.
 
 ## Processing Flow
 

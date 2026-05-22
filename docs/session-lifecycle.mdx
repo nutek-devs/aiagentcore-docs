@@ -1,0 +1,91 @@
+---
+id: session-lifecycle
+title: Session Lifecycle (Pause, Resume, Close)
+sidebar_position: 4
+---
+
+# Session Lifecycle (Pause, Resume, Close)
+
+Every chat session is in one of three states. Use the lifecycle endpoints to pause an agent (so a human can take over), resume after the human is done, or close the session entirely. AIAgentCore guarantees that inbound messages never get dropped — they continue to be persisted while the session is paused; only the agent's automatic replies are suspended.
+
+## Session states
+
+| State | Default | Behaviour |
+|---|---|---|
+| `ongoing` | ✅ initial | Agent responds to every inbound message |
+| `paused` | — | Inbound messages are persisted, agent does **not** reply |
+| `closed` | — | Terminal state. No more processing. New messages from the same customer start a fresh session |
+
+**Allowed transitions:**
+
+| From → To | `ongoing` | `paused` | `closed` |
+|---|---|---|---|
+| `ongoing` | — | `pause` | `close` |
+| `paused` | `resume` | — | `close` |
+| `closed` | — | — | — |
+
+## REST API
+
+All endpoints take the session ID as a path parameter. See the [API Reference](/api) for full schemas.
+
+| Endpoint | Purpose |
+|---|---|
+| `GET  /api/sessions/:id/context` | Inspect the Shared Conversation Context and agent path |
+| `POST /api/sessions/:id/reassign` | Manually change the active agent |
+| `GET  /api/sessions/:id/status` | Read the current state and (if paused) the pause metadata |
+| `POST /api/sessions/:id/pause` | Move from `ongoing` to `paused` |
+| `POST /api/sessions/:id/resume` | Move from `paused` to `ongoing` |
+| `POST /api/sessions/:id/close` | Terminate the session (terminal) |
+
+## Pausing a session
+
+Use cases:
+
+- A human operator wants to take over the conversation directly
+- Manual moderation: hold the agent's auto-replies while a supervisor reviews
+- A connector-level transfer is in progress
+
+Effect: subsequent inbound messages are still persisted on `messages` and webhook logs, but the agent loop is skipped. Outbound messages from the agent are blocked. The session keeps its `activeAgentId` so resume returns to the same agent.
+
+**`pauseState` schema (returned on `GET /:id/status` when paused):**
+
+```json
+{
+  "pauseState": {
+    "pausedAt": "2026-05-21T17:30:00Z",
+    "reason": "Operator João took over via Chat2Desk",
+    "externalReference": "chat2desk:dialog:987654"
+  }
+}
+```
+
+Both `reason` (≤ 500 chars) and `externalReference` (≤ 200 chars) are optional. `externalReference` is used by connectors that hand off to a human queue (Chat2Desk) to keep a back-pointer to the external system.
+
+## Resuming
+
+`POST /api/sessions/:id/resume` returns the session to `ongoing`. If the session was not in `paused` when you call it, the API returns **400** — resuming an already-ongoing or closed session is a programming error, not a no-op.
+
+Optional `note` (≤ 500 chars) is persisted into the Shared Conversation Context so the agent has context for why it is being woken up.
+
+## Transfer to human (`transferToHuman`)
+
+`transferToHuman` is a **connector-specific** feature — only connectors that implement the IMessagingConnector "human handoff" hook expose it. Today only **Chat2Desk** implements it; webchat and other connectors do not.
+
+Two ways to trigger:
+
+1. **From the agent** — call `handoff_to_agent` with a `targetAgentId` that resolves to a "human queue" agent configured for Chat2Desk handoff
+2. **From an operator** — call `POST /api/sessions/:id/reassign` directly
+
+**Fail-safe:** the session is **always** paused as part of the transfer attempt, even if the connector-level call to the external system fails. This guarantees that the agent does not keep replying after the operator has been notified. The external failure is surfaced in `pauseState.reason` and the operator can decide whether to retry.
+
+## Chat2Desk auto-resume integration
+
+When you use Chat2Desk and configure inbound status webhooks (see [Webhooks](/webhooks)), AIAgentCore auto-closes or marks sessions based on what the human operator does on the Chat2Desk side:
+
+| Chat2Desk `hook_type` | Internal action | Effect |
+|---|---|---|
+| `close_dialog` | `session_close` | Session moves to `closed` |
+| `close_request` | `session_close` | Session moves to `closed` |
+| `dialog_transferred` | `session_transfer_external` | Session **stays paused**; transfer is recorded in SCC |
+
+There is no extra configuration needed on the AIAgentCore side — the webhook just has to be registered for the integration. See [Webhooks → Register-webhook helper](/webhooks) for the one-click registration flow.

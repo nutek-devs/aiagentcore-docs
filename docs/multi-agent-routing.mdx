@@ -1,0 +1,174 @@
+---
+id: multi-agent-routing
+title: Multi-Agent Routing & Handoff
+sidebar_position: 3
+---
+
+# Multi-Agent Routing & Handoff
+
+AIAgentCore lets you compose a **team** of specialized agents that hand off work between themselves during a single customer conversation. A receptionist greets the customer, classifies the intent, and forwards the session to a specialist (sales, support, financial). The specialist can hand off again — for example sales escalates to financial when the customer asks about an overdue invoice.
+
+The customer sees a single continuous chat. Internally, AIAgentCore tracks **which agent is currently responsible**, the **shared context** that has accumulated, and the **full path** the conversation has taken.
+
+## Overview
+
+Each chat session carries an `activeAgentId` that determines which agent answers the next inbound message. The active agent can change at any point through:
+
+- **Entry routing** — the first message of a conversation is classified and forwarded to the right specialist
+- **Handoff tool** — any agent can call the `handoff_to_agent` tool mid-conversation
+- **Manual reassign** — operators can override via `POST /api/sessions/:id/reassign`
+
+All transitions are persisted in `chatSessions.metadata.agentPath` so you can inspect — turn by turn — who handled what and why.
+
+Multi-agent is **opt-in per agent**: agents without handoff configuration behave as standalone agents, unchanged.
+
+## Entry routing
+
+When the first message arrives on an entry-point agent that has routing enabled, the message is classified against the agent's `routingConfig`. The classification runs through the agent's `routingModel` (configurable independently from the main `llmModel`, so you can use a cheap model for routing decisions).
+
+**Routing budget — `maxDepth`:**
+
+- Default `maxDepth` is `3` (a comfortable chain: receptionist → specialist → sub-specialist)
+- Hard cap is `5` — the platform refuses to route deeper even if config asks for more
+- Cycles are detected: if a candidate agent already appears earlier in the path, routing terminates with reason `cycle`
+
+**Termination reasons** recorded on the session:
+
+| Reason | Meaning |
+|---|---|
+| `resolved` | The classifier picked a final agent and no further handoff is needed |
+| `max_depth` | `maxDepth` (or hard cap 5) reached — last agent stays active |
+| `cycle` | A cycle was detected — last unique agent stays active |
+| `fallback` | Classifier had no confident answer — entry agent stays active |
+
+## Handoff configuration
+
+Every agent can declare which other agents it is allowed to hand off to. Configuration lives on the agent itself (no central router required).
+
+| Field | Type | Default | Notes |
+|---|---|---|---|
+| `enabled` | boolean | `false` | Master switch for handoff |
+| `allowedTargets` | `number[]` | `[]` | Agent IDs this agent may call `handoff_to_agent` with |
+| `announceHandoff` | boolean | `true` | Whether to send the handoff template message before transferring |
+| `handoffMessageTemplate` | string ≤ 500 | `""` | Optional template shown to the customer when announcing the handoff |
+| `messageHistoryDepth` | int 5–50 | `15` | How many prior messages the receiving agent sees as context |
+| `chat2desk.targetOperatorId` | int? | — | Forward to a specific human operator on Chat2Desk (only when handing off to a "human" target) |
+| `chat2desk.targetGroupId` | int? | — | Forward to a Chat2Desk operator group |
+| `chat2desk.sendSystemMessage` | boolean | `true` | Whether to write a system note on the Chat2Desk side when transferring |
+
+A handoff attempt to an agent **not** in `allowedTargets` is rejected at runtime — the calling agent keeps the turn and an error is recorded.
+
+## Built-in tools
+
+Three tools are always available to every agent regardless of configuration. The LLM can call them as part of its normal tool-use loop.
+
+| Tool | Purpose |
+|---|---|
+| `save_fact` | Persist a structured fact into the Shared Conversation Context (SCC) so subsequent agents can read it |
+| `append_journey` | Add a timestamped step to the conversation journey log |
+| `handoff_to_agent` | Transfer control of the session to another agent (subject to `allowedTargets`) |
+
+### `save_fact`
+
+```json
+{
+  "name": "save_fact",
+  "parameters": {
+    "type": "object",
+    "required": ["key", "value"],
+    "properties": {
+      "key": { "type": "string", "description": "Fact identifier, e.g. customer_email" },
+      "value": { "type": "string", "description": "The value to persist" }
+    }
+  }
+}
+```
+
+### `append_journey`
+
+```json
+{
+  "name": "append_journey",
+  "parameters": {
+    "type": "object",
+    "required": ["step"],
+    "properties": {
+      "step": { "type": "string", "description": "Short description of what just happened" }
+    }
+  }
+}
+```
+
+### `handoff_to_agent`
+
+```json
+{
+  "name": "handoff_to_agent",
+  "parameters": {
+    "type": "object",
+    "required": ["targetAgentId"],
+    "properties": {
+      "targetAgentId": { "type": "integer", "description": "ID of the agent to hand off to" },
+      "reason": { "type": "string", "description": "Why the handoff is happening" }
+    }
+  }
+}
+```
+
+**Example tool-call (sales escalating to financial):**
+
+```json
+{
+  "tool": "handoff_to_agent",
+  "arguments": {
+    "targetAgentId": 17,
+    "reason": "Customer reports an overdue invoice (#A-9921). Routing to financial for collection workflow."
+  }
+}
+```
+
+## Shared Conversation Context (SCC)
+
+Facts and journey entries accumulated by **any** agent during the session are merged into a single object stored in `chatSessions.metadata.sharedContext`. When the active agent changes, the new agent receives the full SCC as part of its system prompt — it does not have to re-ask the customer for information already collected.
+
+Shape:
+
+```json
+{
+  "sharedContext": {
+    "facts": {
+      "customer_email": "joao@example.com",
+      "order_id": "A-9921"
+    },
+    "journey": [
+      { "step": "Customer asked about overdue invoice", "at": "2026-05-21T17:04:11Z" },
+      { "step": "Sales handed off to financial", "at": "2026-05-21T17:04:15Z" }
+    ]
+  }
+}
+```
+
+## Agent path tracking
+
+Every transition (entry routing, handoff, manual reassign) appends an entry to `chatSessions.metadata.agentPath`:
+
+| Field | Type | Notes |
+|---|---|---|
+| `agentId` | integer | Target agent ID |
+| `agentName` | string | Snapshot of the agent name at the time of transition |
+| `role` | string? | Snapshot of the agent role (sales, support, …) |
+| `confidence` | number? | Classifier confidence (only for entry routing) |
+| `routeId` | string? | Internal routing rule that matched |
+| `timestamp` | date-time | When the transition was recorded |
+| `via` | enum | `entry_routing` \| `handoff_tool` \| `initial` |
+| `depth` | integer? | Position in the routing chain (only for entry routing) |
+
+The first entry in every session has `via: "initial"` and represents the entry-point agent before any routing decisions.
+
+## Inspecting the session
+
+Read the full SCC and agent path at any time via the REST API:
+
+- [`GET /api/sessions/:id/context`](/api) — returns `sharedContext`, `agentPath[]`, `activeAgentId`, `agentId`, `chatId`
+
+For pause, resume, close, and manual reassign workflows see [Session Lifecycle](/session-lifecycle).
