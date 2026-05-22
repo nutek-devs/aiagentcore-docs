@@ -63,8 +63,23 @@ When you confirm, a new agent is created with:
 
 You land directly in the agent editor, ready to add channels, knowledge base and tools.
 
+## Multi-agent handoff
+
+The Agent Builder also lets you wire each agent to hand off to others mid-conversation — for example a receptionist routing the customer to sales, or sales escalating to financial when an overdue invoice is mentioned. Handoff is **optional**: single-agent setups continue to work unchanged.
+
+Inside the builder the handoff section exposes the same fields that the backend persists on each agent:
+
+- **Enable handoff** — master toggle (default: off)
+- **Allowed targets** — pick the other agents this one is allowed to forward to
+- **Announce handoff** — whether to send a short template message to the customer when transferring (default: on)
+- **Handoff message template** — optional copy shown to the customer (≤ 500 chars). Leave empty to skip the announcement entirely
+- **Message history depth** — how many prior turns the receiving agent sees as context (5–50, default 15)
+
+For the full mechanics — entry routing, the `handoff_to_agent` built-in tool, Shared Conversation Context (SCC), agent-path tracking and depth limits — see [Multi-Agent Routing & Handoff](/multi-agent-routing).
+
 ## See also
 
 - [Getting Started](/) — account setup and API token
 - [Authentication](/authentication) — API auth flow
+- [Multi-Agent Routing & Handoff](/multi-agent-routing) — compose multiple agents
 - [Widget Embed](/widget-embed) — embed the chat widget on your site

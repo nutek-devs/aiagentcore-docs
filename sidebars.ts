@@ -11,6 +11,8 @@ const sidebars: SidebarsConfig = {
   docs: [
     "getting-started",
     "agent-builder",
+    "multi-agent-routing",
+    "session-lifecycle",
     "authentication",
     "webhooks",
     "widget-embed",
