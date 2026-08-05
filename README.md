@@ -1,11 +1,11 @@
-# aiagentcore-docs
+# vigilsquad-docs
 
-Public documentation site for **aiagentcore**, built with [Docusaurus](https://docusaurus.io/).
-Published at **https://docs.aiagentcore.com**.
+Public documentation site for **vigilsquad**, built with [Docusaurus](https://docusaurus.io/).
+Published at **https://docs.vigilsquad.com**.
 
 - **Owner:** Hugo Marques
-- **Product repo:** [nutek-devs/aiagentcore](https://github.com/nutek-devs/aiagentcore)
-- **Live:** https://docs.aiagentcore.com
+- **Product repo:** [nutek-devs/vigilsquad](https://github.com/nutek-devs/vigilsquad)
+- **Live:** https://docs.vigilsquad.com
 
 ## What's here
 
@@ -48,9 +48,9 @@ npm run start        # local dev server with HMR
 ## Deploy
 
 - **Platform:** Cloudflare Pages — [.github/workflows/deploy.yml](.github/workflows/deploy.yml) (`Build & Deploy to CF Pages`).
-- Published at `https://docs.aiagentcore.com` (`url`/`baseUrl` in [docusaurus.config.ts](docusaurus.config.ts)).
+- Published at `https://docs.vigilsquad.com` (`url`/`baseUrl` in [docusaurus.config.ts](docusaurus.config.ts)).
 
 ## Updating the API reference
 
-The `docs/api/` pages are generated from aiagentcore's OpenAPI spec — do **not** edit them by
+The `docs/api/` pages are generated from vigilsquad's OpenAPI spec — do **not** edit them by
 hand. Regenerate with `npm run gen-api-docs all` after the spec changes.

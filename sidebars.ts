@@ -23,7 +23,7 @@ const sidebars: SidebarsConfig = {
         type: "generated-index",
         title: "API Reference",
         description:
-          "Complete API reference for AIAgentCore, auto-generated from OpenAPI specification.",
+          "Complete API reference for VigilSquad, auto-generated from OpenAPI specification.",
         slug: "/api",
       },
       items: apiSidebar,

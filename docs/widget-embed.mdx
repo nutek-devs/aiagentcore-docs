@@ -6,7 +6,7 @@ sidebar_position: 4
 
 # Widget Embed
 
-The AIAgentCore widget is a lightweight chat interface that you embed on your website. It connects to your AI agent via WebSocket and supports real-time streaming responses.
+The VigilSquad widget is a lightweight chat interface that you embed on your website. It connects to your AI agent via WebSocket and supports real-time streaming responses.
 
 ## Quick Start
 
@@ -14,7 +14,7 @@ Add the widget to any HTML page with a single script tag:
 
 ```html
 <script
-  src="https://api.aiagentcore.com/widget/aiagentcore-widget.js"
+  src="https://api.vigilsquad.com/widget/vigilsquad-widget.js"
   data-integration-id="YOUR_INTEGRATION_ID"
 ></script>
 ```
@@ -26,11 +26,11 @@ That's it. The widget appears as a floating chat bubble in the bottom-right corn
 For more control, use the JavaScript API:
 
 ```html
-<script src="https://api.aiagentcore.com/widget/aiagentcore-widget.js"></script>
+<script src="https://api.vigilsquad.com/widget/vigilsquad-widget.js"></script>
 <script>
-  AIAgentCore.init({
+  VigilSquad.init({
     integrationId: 42,
-    host: "https://api.aiagentcore.com",
+    host: "https://api.vigilsquad.com",
     lang: "en"
   });
 </script>
@@ -58,7 +58,7 @@ The widget supports three languages:
 
 ```html
 <script
-  src="https://api.aiagentcore.com/widget/aiagentcore-widget.js"
+  src="https://api.vigilsquad.com/widget/vigilsquad-widget.js"
   data-integration-id="42"
   data-lang="pt-BR"
 ></script>
@@ -67,7 +67,7 @@ The widget supports three languages:
 ### Via JavaScript
 
 ```javascript
-AIAgentCore.init({
+VigilSquad.init({
   integrationId: 42,
   lang: "pt-BR"
 });
@@ -99,7 +99,7 @@ The widget loads its configuration from the server based on the `integrationId`.
 | `autoOpenDelayMs` | `number` | `3000` | Delay before auto-opening (ms) |
 | `requireEmail` | `boolean` | `false` | Capture email before allowing chat |
 | `captureUtm` | `boolean` | `false` | Track UTM parameters from URL |
-| `removeBranding` | `boolean` | `false` | Hide "Powered by AIAgentCore" |
+| `removeBranding` | `boolean` | `false` | Hide "Powered by VigilSquad" |
 
 ## Email Capture
 
@@ -152,7 +152,7 @@ The widget connects to your AI agent via **Socket.IO WebSocket**:
 - **Path:** `/ws`
 - **Transport:** WebSocket with long-polling fallback
 - **Reconnection:** Automatic, up to 5 attempts with 1s delay
-- **Session persistence:** Client ID stored in `localStorage` (`aiagentcore_cid_{integrationId}`)
+- **Session persistence:** Client ID stored in `localStorage` (`vigilsquad_cid_{integrationId}`)
 
 ### Streaming Responses
 
@@ -171,7 +171,7 @@ The widget renders inside a [Shadow DOM](https://developer.mozilla.org/en-US/doc
 To remove the widget programmatically:
 
 ```javascript
-const widget = AIAgentCore.init({ integrationId: 42 });
+const widget = VigilSquad.init({ integrationId: 42 });
 
 // Later, when you want to remove it:
 widget.destroy();

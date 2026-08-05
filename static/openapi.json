@@ -1,21 +1,21 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "AIAgentCore API",
+    "title": "VigilSquad API",
     "version": "1.0.0",
     "description": "API for managing AI agents, integrations, and conversational widgets. Authenticate via Bearer token.",
     "contact": {
       "name": "Nutek Devs",
-      "url": "https://aiagentcore.com"
+      "url": "https://vigilsquad.com"
     }
   },
   "servers": [
     {
-      "url": "https://api.aiagentcore.com",
+      "url": "https://api.vigilsquad.com",
       "description": "Production"
     },
     {
-      "url": "https://dev-api.aiagentcore.com",
+      "url": "https://dev-api.vigilsquad.com",
       "description": "Development"
     }
   ],

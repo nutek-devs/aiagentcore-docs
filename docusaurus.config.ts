@@ -3,13 +3,13 @@ import type { Config } from "@docusaurus/types";
 import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
 
 const config: Config = {
-  title: "AIAgentCore Docs",
+  title: "VigilSquad Docs",
   tagline: "Build AI-powered customer agents",
   favicon: "img/favicon.ico",
-  url: "https://docs.aiagentcore.com",
+  url: "https://docs.vigilsquad.com",
   baseUrl: "/",
   organizationName: "nutek-devs",
-  projectName: "aiagentcore-docs",
+  projectName: "vigilsquad-docs",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
 
@@ -47,7 +47,7 @@ const config: Config = {
         id: "api",
         docsPluginId: "default",
         config: {
-          aiagentcore: {
+          vigilsquad: {
             specPath: "static/openapi.json",
             outputDir: "docs/api",
             sidebarOptions: {
@@ -78,9 +78,9 @@ const config: Config = {
   themeConfig: {
     image: "img/social-card.png",
     navbar: {
-      title: "AIAgentCore",
+      title: "VigilSquad",
       logo: {
-        alt: "AIAgentCore Logo",
+        alt: "VigilSquad Logo",
         src: "img/logo.svg",
       },
       items: [
@@ -100,7 +100,7 @@ const config: Config = {
           position: "right",
         },
         {
-          href: "https://github.com/nutek-devs/aiagentcore",
+          href: "https://github.com/nutek-devs/vigilsquad",
           label: "GitHub",
           position: "right",
         },
@@ -119,8 +119,8 @@ const config: Config = {
         {
           title: "Product",
           items: [
-            { label: "Dashboard", href: "https://app.aiagentcore.com" },
-            { label: "Status", href: "https://status.aiagentcore.com" },
+            { label: "Dashboard", href: "https://app.vigilsquad.com" },
+            { label: "Status", href: "https://status.vigilsquad.com" },
           ],
         },
         {
@@ -128,7 +128,7 @@ const config: Config = {
           items: [
             {
               label: "GitHub",
-              href: "https://github.com/nutek-devs/aiagentcore",
+              href: "https://github.com/nutek-devs/vigilsquad",
             },
           ],
         },

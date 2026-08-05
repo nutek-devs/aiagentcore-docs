@@ -6,7 +6,7 @@ sidebar_position: 2
 
 # Authentication
 
-AIAgentCore uses **Bearer token authentication**. All protected API endpoints require a valid token in the `Authorization` header.
+VigilSquad uses **Bearer token authentication**. All protected API endpoints require a valid token in the `Authorization` header.
 
 ## Overview
 
@@ -21,7 +21,7 @@ There are two types of authentication:
 
 The simplest way to authenticate. Get your token from the Dashboard:
 
-1. Log in to [app.aiagentcore.com](https://app.aiagentcore.com)
+1. Log in to [app.vigilsquad.com](https://app.vigilsquad.com)
 2. Go to **Settings**
 3. Copy the **API Token**
 
@@ -29,7 +29,7 @@ Use it in every request:
 
 ```bash
 curl -H "Authorization: Bearer YOUR_API_TOKEN" \
-  https://api.aiagentcore.com/api/agents
+  https://api.vigilsquad.com/api/agents
 ```
 
 ## Session Authentication (JWT)
@@ -39,7 +39,7 @@ For programmatic access, you can obtain a JWT session via the login endpoint.
 ### Register
 
 ```bash
-curl -X POST https://api.aiagentcore.com/api/auth/register \
+curl -X POST https://api.vigilsquad.com/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -71,7 +71,7 @@ New accounts receive **$5 in free credits** and a default sales pipeline with 6 
 ### Login
 
 ```bash
-curl -X POST https://api.aiagentcore.com/api/auth/login \
+curl -X POST https://api.vigilsquad.com/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -101,7 +101,7 @@ curl -X POST https://api.aiagentcore.com/api/auth/login \
 Access tokens expire. Use the refresh token to get a new session without re-authenticating:
 
 ```bash
-curl -X POST https://api.aiagentcore.com/api/auth/refresh \
+curl -X POST https://api.vigilsquad.com/api/auth/refresh \
   -H "Content-Type: application/json" \
   -d '{
     "refresh_token": "v1.MjE0..."
@@ -124,7 +124,7 @@ curl -X POST https://api.aiagentcore.com/api/auth/refresh \
 
 ```bash
 curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  https://api.aiagentcore.com/api/auth/me
+  https://api.vigilsquad.com/api/auth/me
 ```
 
 **Response (200 OK):**

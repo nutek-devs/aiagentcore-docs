@@ -7,17 +7,17 @@ sidebar_position: 1
 
 # Primeiros Passos
 
-AIAgentCore e uma plataforma de nivel empresarial para construir agentes de atendimento ao cliente com IA. Conecte seus canais de mensagens, configure agentes inteligentes com RAG (Retrieval-Augmented Generation) e deixe-os lidar com conversas automaticamente.
+VigilSquad e uma plataforma de nivel empresarial para construir agentes de atendimento ao cliente com IA. Conecte seus canais de mensagens, configure agentes inteligentes com RAG (Retrieval-Augmented Generation) e deixe-os lidar com conversas automaticamente.
 
 ## Crie Sua Conta
 
-1. Acesse o [Painel do AIAgentCore](https://app.aiagentcore.com)
+1. Acesse o [Painel do VigilSquad](https://app.vigilsquad.com)
 2. Clique em **Sign Up** e preencha seu e-mail, senha e nome da empresa
 3. Sua conta vem com **$5 em creditos gratuitos** para comecar
 
 ## Obtenha Seu Token de API
 
-1. Faca login no [Painel](https://app.aiagentcore.com)
+1. Faca login no [Painel](https://app.vigilsquad.com)
 2. Navegue ate **Configuracoes** na barra lateral
 3. Copie seu **API Token** na secao de API
 
@@ -25,7 +25,7 @@ Todas as requisicoes de API exigem esse token no header `Authorization`:
 
 ```bash
 curl -H "Authorization: Bearer YOUR_API_TOKEN" \
-  https://api.aiagentcore.com/api/agents
+  https://api.vigilsquad.com/api/agents
 ```
 
 ## Crie Seu Primeiro Agente
@@ -45,7 +45,7 @@ curl -H "Authorization: Bearer YOUR_API_TOKEN" \
 ### Via API
 
 ```bash
-curl -X POST https://api.aiagentcore.com/api/agents \
+curl -X POST https://api.vigilsquad.com/api/agents \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -58,7 +58,7 @@ curl -X POST https://api.aiagentcore.com/api/agents \
 
 ## Conecte um Canal
 
-Os agentes precisam de um **canal** para receber mensagens. O AIAgentCore suporta:
+Os agentes precisam de um **canal** para receber mensagens. O VigilSquad suporta:
 
 - **Widget de Webchat** — Incorpore no seu site ([saiba mais](/widget-embed))
 - **Chat2Desk** — Conecte WhatsApp, Telegram e mais via Chat2Desk
@@ -77,7 +77,7 @@ Os agentes precisam de um **canal** para receber mensagens. O AIAgentCore suport
 3. Insira seu token de API do Chat2Desk
 4. Configure a URL do webhook no painel do Chat2Desk:
    ```
-   https://api.aiagentcore.com/api/webhook/chat2desk/{integrationId}
+   https://api.vigilsquad.com/api/webhook/chat2desk/{integrationId}
    ```
 5. Selecione quais canais conectar
 

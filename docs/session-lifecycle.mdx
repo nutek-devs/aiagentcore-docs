@@ -6,7 +6,7 @@ sidebar_position: 4
 
 # Session Lifecycle (Pause, Resume, Close)
 
-Every chat session is in one of three states. Use the lifecycle endpoints to pause an agent (so a human can take over), resume after the human is done, or close the session entirely. AIAgentCore guarantees that inbound messages never get dropped — they continue to be persisted while the session is paused; only the agent's automatic replies are suspended.
+Every chat session is in one of three states. Use the lifecycle endpoints to pause an agent (so a human can take over), resume after the human is done, or close the session entirely. VigilSquad guarantees that inbound messages never get dropped — they continue to be persisted while the session is paused; only the agent's automatic replies are suspended.
 
 ## Session states
 
@@ -80,7 +80,7 @@ Two ways to trigger:
 
 ## Chat2Desk auto-resume integration
 
-When you use Chat2Desk and configure inbound status webhooks (see [Webhooks](/webhooks)), AIAgentCore auto-closes or marks sessions based on what the human operator does on the Chat2Desk side:
+When you use Chat2Desk and configure inbound status webhooks (see [Webhooks](/webhooks)), VigilSquad auto-closes or marks sessions based on what the human operator does on the Chat2Desk side:
 
 | Chat2Desk `hook_type` | Internal action | Effect |
 |---|---|---|
@@ -88,4 +88,4 @@ When you use Chat2Desk and configure inbound status webhooks (see [Webhooks](/we
 | `close_request` | `session_close` | Session moves to `closed` |
 | `dialog_transferred` | `session_transfer_external` | Session **stays paused**; transfer is recorded in SCC |
 
-There is no extra configuration needed on the AIAgentCore side — the webhook just has to be registered for the integration. See [Webhooks → Register-webhook helper](/webhooks) for the one-click registration flow.
+There is no extra configuration needed on the VigilSquad side — the webhook just has to be registered for the integration. See [Webhooks → Register-webhook helper](/webhooks) for the one-click registration flow.

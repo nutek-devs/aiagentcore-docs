@@ -4,7 +4,7 @@ const sidebar: SidebarsConfig = {
   apisidebar: [
     {
       type: "doc",
-      id: "api/aiagentcore-api",
+      id: "api/vigilsquad-api",
     },
     {
       type: "category",
