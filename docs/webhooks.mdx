@@ -6,12 +6,12 @@ sidebar_position: 3
 
 # Webhooks
 
-AIAgentCore receives inbound messages from messaging platforms via webhooks. When a customer sends a message on WhatsApp, Telegram, or any connected channel, the platform delivers it to your webhook endpoint for processing.
+VigilSquad receives inbound messages from messaging platforms via webhooks. When a customer sends a message on WhatsApp, Telegram, or any connected channel, the platform delivers it to your webhook endpoint for processing.
 
 ## Webhook URL Format
 
 ```
-POST https://api.aiagentcore.com/api/webhook/{connectorType}/{integrationId}
+POST https://api.vigilsquad.com/api/webhook/{connectorType}/{integrationId}
 ```
 
 | Parameter | Description | Example |
@@ -21,7 +21,7 @@ POST https://api.aiagentcore.com/api/webhook/{connectorType}/{integrationId}
 
 **Example:**
 ```
-https://api.aiagentcore.com/api/webhook/chat2desk/42
+https://api.vigilsquad.com/api/webhook/chat2desk/42
 ```
 
 ## Supported Connectors
@@ -32,11 +32,11 @@ https://api.aiagentcore.com/api/webhook/chat2desk/42
 
 **Setup:**
 
-1. Create a Chat2Desk integration in the AIAgentCore Dashboard
+1. Create a Chat2Desk integration in the VigilSquad Dashboard
 2. Copy the webhook URL
 3. In your Chat2Desk dashboard, set the webhook URL to:
    ```
-   https://api.aiagentcore.com/api/webhook/chat2desk/{integrationId}
+   https://api.vigilsquad.com/api/webhook/chat2desk/{integrationId}
    ```
 4. Configure the webhook secret for signature verification
 
@@ -53,7 +53,7 @@ https://api.aiagentcore.com/api/webhook/chat2desk/42
 
 #### Chat2Desk Status Events (Auto-resume)
 
-Chat2Desk also delivers **status events** to the same webhook URL when a human operator acts on a dialog. AIAgentCore consumes these events to keep the AI session in sync — for example automatically closing the session when the operator closes the ticket.
+Chat2Desk also delivers **status events** to the same webhook URL when a human operator acts on a dialog. VigilSquad consumes these events to keep the AI session in sync — for example automatically closing the session when the operator closes the ticket.
 
 The event type is determined by the `hook_type` field on the inbound payload (verbatim — not `event` or `type`).
 
@@ -73,13 +73,13 @@ The event type is determined by the `hook_type` field on the inbound payload (ve
 
 **`hook_type` → internal action:**
 
-| `hook_type` | Internal action | Effect on AIAgentCore session |
+| `hook_type` | Internal action | Effect on VigilSquad session |
 |---|---|---|
 | `close_dialog` | `session_close` | Session moves to `closed` |
 | `close_request` | `session_close` | Session moves to `closed` |
 | `dialog_transferred` | `session_transfer_external` | Session **stays paused**, transfer is recorded in the Shared Conversation Context |
 
-No extra configuration is needed on the AIAgentCore side — the webhook just has to be registered (see **Register-webhook helper** below).
+No extra configuration is needed on the VigilSquad side — the webhook just has to be registered (see **Register-webhook helper** below).
 
 See [Session Lifecycle](/session-lifecycle) for the full state machine.
 
@@ -91,13 +91,13 @@ See [Widget Embed](/widget-embed) for setup instructions.
 
 ## Webhook Signature Verification
 
-AIAgentCore verifies the authenticity of incoming webhooks using **HMAC-SHA256 signatures**.
+VigilSquad verifies the authenticity of incoming webhooks using **HMAC-SHA256 signatures**.
 
 ### How It Works
 
 1. The sending platform computes an HMAC-SHA256 hash of the request body using the shared webhook secret
 2. The hash is sent in the `x-webhook-signature` or `x-hub-signature-256` header
-3. AIAgentCore recomputes the hash and compares it using timing-safe comparison
+3. VigilSquad recomputes the hash and compares it using timing-safe comparison
 
 ### Signature Header Format
 
@@ -138,7 +138,7 @@ function verifySignature(
 
 ## Register-webhook helper (UI + API)
 
-You don't have to copy and paste the webhook URL into the Chat2Desk dashboard by hand — AIAgentCore can register (or re-register) the webhook on your behalf.
+You don't have to copy and paste the webhook URL into the Chat2Desk dashboard by hand — VigilSquad can register (or re-register) the webhook on your behalf.
 
 **UI:** In **Settings → Integrations**, open the card for your Chat2Desk integration. The card shows a **Register webhook** button (or **Re-register webhook** if one is already registered) plus a **Webhook OK** / **Webhook pendente** badge. Clicking the button calls the helper endpoint below.
 
@@ -161,7 +161,7 @@ See the [API Reference](/api) for the full schema. The call is **idempotent** �
 
 ## Processing Flow
 
-When a webhook is received, AIAgentCore processes it asynchronously:
+When a webhook is received, VigilSquad processes it asynchronously:
 
 ```
 Platform → Webhook Endpoint → Signature Verification → Message Parsing → Queue → AI Agent → Response
@@ -194,10 +194,10 @@ Platform → Webhook Endpoint → Signature Verification → Message Parsing →
 
 ## Endpoint Verification
 
-Some platforms send a GET request to verify the webhook URL. AIAgentCore handles this automatically:
+Some platforms send a GET request to verify the webhook URL. VigilSquad handles this automatically:
 
 ```
-GET https://api.aiagentcore.com/api/webhook/{connectorType}/{integrationId}
+GET https://api.vigilsquad.com/api/webhook/{connectorType}/{integrationId}
 ```
 
 **Response (200 OK):**

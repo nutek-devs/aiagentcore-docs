@@ -6,12 +6,12 @@ sidebar_position: 3
 
 # Webhooks
 
-AIAgentCore recibe mensajes entrantes de plataformas de mensajería a través de webhooks. Cuando un cliente envía un mensaje en WhatsApp, Telegram o cualquier canal conectado, la plataforma lo entrega a tu endpoint de webhook para su procesamiento.
+VigilSquad recibe mensajes entrantes de plataformas de mensajería a través de webhooks. Cuando un cliente envía un mensaje en WhatsApp, Telegram o cualquier canal conectado, la plataforma lo entrega a tu endpoint de webhook para su procesamiento.
 
 ## Formato de URL del Webhook
 
 ```
-POST https://api.aiagentcore.com/api/webhook/{connectorType}/{integrationId}
+POST https://api.vigilsquad.com/api/webhook/{connectorType}/{integrationId}
 ```
 
 | Parámetro | Descripción | Ejemplo |
@@ -21,7 +21,7 @@ POST https://api.aiagentcore.com/api/webhook/{connectorType}/{integrationId}
 
 **Ejemplo:**
 ```
-https://api.aiagentcore.com/api/webhook/chat2desk/42
+https://api.vigilsquad.com/api/webhook/chat2desk/42
 ```
 
 ## Conectores Soportados
@@ -32,11 +32,11 @@ https://api.aiagentcore.com/api/webhook/chat2desk/42
 
 **Configuración:**
 
-1. Crea una integración de Chat2Desk en el Panel de AIAgentCore
+1. Crea una integración de Chat2Desk en el Panel de VigilSquad
 2. Copia la URL del webhook
 3. En tu panel de Chat2Desk, configura la URL del webhook como:
    ```
-   https://api.aiagentcore.com/api/webhook/chat2desk/{integrationId}
+   https://api.vigilsquad.com/api/webhook/chat2desk/{integrationId}
    ```
 4. Configura el secreto del webhook para la verificación de firma
 
@@ -59,13 +59,13 @@ Consulta [Incorporar Widget](/widget-embed) para instrucciones de configuración
 
 ## Verificación de Firma del Webhook
 
-AIAgentCore verifica la autenticidad de los webhooks entrantes utilizando **firmas HMAC-SHA256**.
+VigilSquad verifica la autenticidad de los webhooks entrantes utilizando **firmas HMAC-SHA256**.
 
 ### Cómo Funciona
 
 1. La plataforma emisora calcula un hash HMAC-SHA256 del cuerpo de la solicitud usando el secreto compartido del webhook
 2. El hash se envía en el encabezado `x-webhook-signature` o `x-hub-signature-256`
-3. AIAgentCore recalcula el hash y lo compara usando una comparación segura contra ataques de tiempo
+3. VigilSquad recalcula el hash y lo compara usando una comparación segura contra ataques de tiempo
 
 ### Formato del Encabezado de Firma
 
@@ -106,7 +106,7 @@ function verifySignature(
 
 ## Flujo de Procesamiento
 
-Cuando se recibe un webhook, AIAgentCore lo procesa de forma asíncrona:
+Cuando se recibe un webhook, VigilSquad lo procesa de forma asíncrona:
 
 ```
 Plataforma → Endpoint de Webhook → Verificación de Firma → Análisis del Mensaje → Cola → Agente de IA → Respuesta
@@ -139,10 +139,10 @@ Plataforma → Endpoint de Webhook → Verificación de Firma → Análisis del 
 
 ## Verificación del Endpoint
 
-Algunas plataformas envían una solicitud GET para verificar la URL del webhook. AIAgentCore maneja esto automáticamente:
+Algunas plataformas envían una solicitud GET para verificar la URL del webhook. VigilSquad maneja esto automáticamente:
 
 ```
-GET https://api.aiagentcore.com/api/webhook/{connectorType}/{integrationId}
+GET https://api.vigilsquad.com/api/webhook/{connectorType}/{integrationId}
 ```
 
 **Respuesta (200 OK):**

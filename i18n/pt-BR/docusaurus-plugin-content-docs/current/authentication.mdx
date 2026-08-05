@@ -6,7 +6,7 @@ sidebar_position: 2
 
 # Autenticacao
 
-O AIAgentCore utiliza **autenticacao via Bearer token**. Todos os endpoints protegidos da API exigem um token valido no header `Authorization`.
+O VigilSquad utiliza **autenticacao via Bearer token**. Todos os endpoints protegidos da API exigem um token valido no header `Authorization`.
 
 ## Visao Geral
 
@@ -21,7 +21,7 @@ Existem dois tipos de autenticacao:
 
 A forma mais simples de autenticar. Obtenha seu token no Painel:
 
-1. Faca login em [app.aiagentcore.com](https://app.aiagentcore.com)
+1. Faca login em [app.vigilsquad.com](https://app.vigilsquad.com)
 2. Va em **Configuracoes**
 3. Copie o **API Token**
 
@@ -29,7 +29,7 @@ Use-o em toda requisicao:
 
 ```bash
 curl -H "Authorization: Bearer YOUR_API_TOKEN" \
-  https://api.aiagentcore.com/api/agents
+  https://api.vigilsquad.com/api/agents
 ```
 
 ## Autenticacao por Sessao (JWT)
@@ -39,7 +39,7 @@ Para acesso programatico, voce pode obter um JWT de sessao pelo endpoint de logi
 ### Registro
 
 ```bash
-curl -X POST https://api.aiagentcore.com/api/auth/register \
+curl -X POST https://api.vigilsquad.com/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -71,7 +71,7 @@ Novas contas recebem **$5 em creditos gratuitos** e um pipeline de vendas padrao
 ### Login
 
 ```bash
-curl -X POST https://api.aiagentcore.com/api/auth/login \
+curl -X POST https://api.vigilsquad.com/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -101,7 +101,7 @@ curl -X POST https://api.aiagentcore.com/api/auth/login \
 Os tokens de acesso expiram. Use o refresh token para obter uma nova sessao sem precisar autenticar novamente:
 
 ```bash
-curl -X POST https://api.aiagentcore.com/api/auth/refresh \
+curl -X POST https://api.vigilsquad.com/api/auth/refresh \
   -H "Content-Type: application/json" \
   -d '{
     "refresh_token": "v1.MjE0..."
@@ -124,7 +124,7 @@ curl -X POST https://api.aiagentcore.com/api/auth/refresh \
 
 ```bash
 curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  https://api.aiagentcore.com/api/auth/me
+  https://api.vigilsquad.com/api/auth/me
 ```
 
 **Resposta (200 OK):**
